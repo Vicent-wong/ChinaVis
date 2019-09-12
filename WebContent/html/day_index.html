@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Vis_2019</title>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/day_index.css">
+  <script type="text/javascript" src="../js/day.js"></script>
+  <STYLE type="text/css">
+		
+  </STYLE>
+</head>
+<body>
+    <div id=day_map><iframe id="iframe" src="day1.html" scrolling="no" frameborder="0"></iframe></div>
+	<div id="Buttons">
+	     <input type="radio" name="hh" value="1" onclick="change()" checked="checked"/>day1
+	     <input type="radio" name="hh" value="2" onclick="change()"/>day2
+	     <input type="radio" name="hh" value="3" onclick="change()"/>day3
+	</div>
+</body>
+ <script src="https://d3js.org/d3.v3.min.js"></script>
+	<script>
+	function change(){
+		var obj=event.srcElement;
+		if(obj.value=="1"){
+			document.getElementById("iframe").src="day1.html";
+		}	    
+		if(obj.value=="2"){
+			document.getElementById("iframe").src="../html2/day2.html";
+		}
+		if(obj.value=="3"){
+			document.getElementById("iframe").src="day3.html";
+		}
+	}
+	</script>
+</html>

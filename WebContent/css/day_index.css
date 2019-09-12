@@ -1,0 +1,15 @@
+body{
+	margin:0px;
+}
+#day_map{
+	width:1365px;
+	height:625px;
+}
+#iframe{
+	width:1365px;
+	height:625px;
+}
+#Buttons{
+	margin-left:550px;
+	position:relative;
+}

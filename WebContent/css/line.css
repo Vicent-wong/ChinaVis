@@ -1,0 +1,25 @@
+#Line_3 path{
+       stroke: steelblue;
+       stroke-width: 2;
+       fill: none;
+   }
+#Line_3 .axis path,
+#Line_3 .axis line{
+       fill: none;
+       stroke: grey;
+       stroke-width: 1;
+       shape-rendering: crispEdges;
+   }
+#Line_3 .grid .tick {
+   stroke: lightgrey;
+   opacity: 0.7;
+}
+#Line_3 .grid path {
+   stroke-width: 0;
+}
+
+#Line_3 #rect {
+    width: 30px;
+    height: 5px;
+    background: red;
+}

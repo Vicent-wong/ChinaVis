@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arrangement</title>
+    <style type = "text/css">
+    body{ font: 12px Arial;}
+    path{
+        stroke: steelblue;
+        stroke-width: 2;
+        fill: none;
+    }
+    .axis path,
+    .axis line{
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+    }
+	.grid .tick {
+    stroke: lightgrey;
+    opacity: 0.7;
+	}
+	.grid path {
+    stroke-width: 0;
+	}
+	
+	#circle {
+    width: 30px;
+    height: 30px;
+    background: pink;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+	}
+	
+	#rect {
+     width: 30px;
+     height: 5px;
+     background: red;
+	}
+	
+    </style>
+    <script  src="../js/d3.v3.min.js"></script>
+</head>
+<body>
+      <div id="option" style="position:fixed;left:200px">
+			<input name="updateButton" 
+            type="button" 
+            value="主会场" 
+            onclick="updateData1()" />
+      </div>
+	 
+	  <div id="option" style="position:fixed;left:400px">
+			<input name="updateButton" 
+            type="button" 
+            value="分会场A" 
+            onclick="updateData2()" />
+     </div>
+	 
+	  <div id="option" style="position:fixed;left:600px">
+			<input name="updateButton" 
+            type="button" 
+            value="分会场B" 
+            onclick="updateData3()" />
+     </div>
+	 
+	 <div id="option" style="position:fixed;left:800px">
+			<input name="updateButton" 
+            type="button" 
+            value="分会场C" 
+            onclick="updateData4()" />
+     </div>
+	 
+	 <div id="option" style="position:fixed;left:1000px">
+			<input name="updateButton" 
+            type="button" 
+            value="分会场D" 
+            onclick="updateData5()" />
+     </div>
+	  
+    <script type="text/javascript">
+    var margin = {top:50, right:20, bottom: 30, left: 60};
+    width = 1200 - margin.left -margin.right;
+    height = 600 - margin.top - margin.bottom;
+	
+	//var format = d3.time.format("%H:%M:%S");
+	// 时间数量数据
+	var timeset1 =[];
+	var timeset2 =[];
+	var timeset3 =[];//对应主会场三天的时间和人数
+	
+	var timeset4 =[];
+	var timeset5 =[];
+	var timeset6 =[];//对应分会场A三天的时间和人数
+	
+	var timeset7 =[];
+	var timeset8 =[];
+	var timeset9 =[];//对应分会场B三天的时间和人数
+	
+	var timeset10 =[];
+	var timeset11 =[];
+	var timeset12 =[];//对应分会场C三天的时间和人数
+	
+	var timeset13 =[];
+	var timeset14 =[];
+	var timeset15 =[];//对应分会场D三天的时间和人数
+	
+	//时间向量
+	var times1 =[];//第一天的时间
+	var times2 =[];//第二天的时间
+	var times3 =[];//第三天的时间
+	
+	//人数向量
+	var p_main1=[];//主会场第一天的人数
+	var p_main2=[];//主会场第二天的人数
+	var p_main3=[];//主会场第三天的人数	
+	
+	var A_main1=[];//分会场A第一天的人数
+	var A_main2=[];//分会场A第二天的人数
+	var A_main3=[];//分会场A第三天的人数	
+	
+	var B_main1=[];//分会场B第一天的人数
+	var B_main2=[];//分会场B第二天的人数
+	var B_main3=[];//分会场B第三天的人数	
+	
+	var C_main1=[];//分会场C第一天的人数
+	var C_main2=[];//分会场C第二天的人数
+	var C_main3=[];//分会场C第三天的人数	
+	
+	var D_main1=[];//分会场D第一天的人数
+	var D_main2=[];//分会场D第二天的人数
+	var D_main3=[];//分会场D第三天的人数
+	
+    var parseDate = d3.time.format("%H:%M:%S").parse;
+	//y坐标轴
+	var y1;
+	var y2;
+	var y3;
+	var y4;
+	var y5;
+	//y方向上的格栅
+	var makey1;
+	var makey2;
+	var makey3;
+	var makey4;
+	var makey5;
+	//线条
+	var svg_path1;
+	var svg_path2;
+	var svg_path3;
+	var svg_path4;
+	var svg_path5;
+	var svg_path6;
+	var svg_path7;
+	var svg_path8;
+	var svg_path9;
+	var svg_path10;
+	var svg_path11;
+	var svg_path12;
+	var svg_path13;
+	var svg_path14;
+	var svg_path15;
+	//绘制标签线条所用的数据
+	var label1 =[[900,20],[1020,20]]
+	var label2 =[[900,60],[1020,60]]
+	var label3 =[[900,100],[1020,100]]
+    //Get the data
+    d3.csv("../data1/all.csv",function(error, data){
+//处理主会场的数据
+  data.forEach(function(d) {
+    var cx1 = d.time1;
+    var cy1 = d.zhu1;
+    timeset1.push([cx1,cy1]);
+    times1.push(cx1);
+	p_main1.push(cy1);
+  })
+  data.forEach(function(d) {
+    var cx2 = d.time2; 
+	var cy2 = d.zhu2;
+	timeset2.push([cx2,cy2]);
+    times2.push(cx2);
+	p_main2.push(cy2);
+  })
+  data.forEach(function(d) {
+    var cx3 = d.time3;
+	var cy3 = d.zhu3;
+	timeset3.push([cx3,cy3]);
+    times3.push(cx3);
+	p_main3.push(cy3);
+  })
+//处理分会场A的数据
+ data.forEach(function(d) {
+    var cx1 = d.time1;
+    var cy4 = d.A1;
+    timeset4.push([cx1,cy4]);
+    //times1.push(cx1);
+	A_main1.push(cy4);
+  })
+  data.forEach(function(d) {
+    var cx2 = d.time2; 
+	var cy5 = d.A2;
+	timeset5.push([cx2,cy5]);
+    //times2.push(cx2);
+	A_main2.push(cy5);
+  })
+  data.forEach(function(d) {
+    var cx3 = d.time3;
+	var cy6 = d.A3;
+	timeset6.push([cx3,cy6]);
+    //times3.push(cx3);
+	A_main3.push(cy6);
+  })
+ //处理分会场B的数据
+  data.forEach(function(d) {
+    var cx1 = d.time1;
+    var cy7 = d.B1;
+    timeset7.push([cx1,cy7]);
+    //times1.push(cx1);
+	B_main1.push(cy7);
+  })
+  data.forEach(function(d) {
+    var cx2 = d.time2; 
+	var cy8 = d.B2;
+	timeset8.push([cx2,cy8]);
+    //times2.push(cx2);
+	B_main2.push(cy8);
+  })
+  data.forEach(function(d) {
+    var cx3 = d.time3;
+	var cy9 = d.B3;
+	timeset9.push([cx3,cy9]);
+    //times3.push(cx3);
+	B_main3.push(cy9);
+  })
+//处理分会场C的人数
+  data.forEach(function(d) {
+    var cx1 = d.time1;
+    var cy10 = d.C1;
+    timeset10.push([cx1,cy10]);
+    //times1.push(cx1);
+	C_main1.push(cy10);
+  })
+  data.forEach(function(d) {
+    var cx2 = d.time2; 
+	var cy11 = d.C2;
+	timeset11.push([cx2,cy11]);
+    //times2.push(cx2);
+	C_main2.push(cy11);
+  })
+  data.forEach(function(d) {
+    var cx3 = d.time3;
+	var cy12 = d.C3;
+	timeset12.push([cx3,cy12]);
+    //times3.push(cx3);
+	C_main3.push(cy12);
+  })
+//处理分会场D的人数
+  data.forEach(function(d) {
+    var cx1 = d.time1;
+    var cy13 = d.D1;
+    timeset13.push([cx1,cy13]);
+    //times1.push(cx1);
+	D_main1.push(cy13);
+  })
+  data.forEach(function(d) {
+    var cx2 = d.time2; 
+	var cy14 = d.D2;
+	timeset14.push([cx2,cy14]);
+    //times2.push(cx2);
+	D_main2.push(cy14);
+  })
+  data.forEach(function(d) {
+    var cx3 = d.time3;
+	var cy15 = d.D3;
+	timeset15.push([cx3,cy15]);
+    //times3.push(cx3);
+	D_main3.push(cy15);
+  })
+  //定义坐标轴的范围
+	var xscale = d3.time.scale()
+	.domain([parseDate(times1[0]),parseDate(times2[times2.length-1])])
+	.range([0, width]);
+	//主会场y坐标轴
+    var yscale1 = d3.scale.linear()
+	.domain([0, d3.max(p_main2, function(d){ return d*1.03;})])
+	.range([height, 0]);
+	//分会场A的y坐标轴
+	var yscale2 = d3.scale.linear()
+	.domain([0, d3.max(A_main3, function(d){ return d*1.06;})])
+	.range([height, 0]);
+	//分会场B的y坐标轴
+	var yscale3 = d3.scale.linear()
+	.domain([0, d3.max(B_main2, function(d){ return d*1.01;})])
+	.range([height, 0]);
+	//分会场C的y坐标轴
+	var yscale4 = d3.scale.linear()
+	.domain([0, d3.max(C_main1, function(d){ return d*1.01;})])
+	.range([height, 0]);
+	//分会场D的y坐标轴
+	var yscale5 = d3.scale.linear()
+	.domain([0, d3.max(D_main1, function(d){ return d*1.03;})])
+	.range([height, 0]);
+	//x的坐标轴
+    var xAxis = d3.svg.axis().scale(xscale).orient("bottom").ticks(10);
+	//主会场的y坐标轴
+    var yAxis1 = d3.svg.axis().scale(yscale1).orient("left").ticks(10);
+	//分会场A的y坐标轴
+    var yAxis2 = d3.svg.axis().scale(yscale2).orient("left").ticks(10);
+	//分会场B的y坐标轴
+    var yAxis3 = d3.svg.axis().scale(yscale3).orient("left").ticks(10);
+	//主会场C的y坐标轴
+    var yAxis4 = d3.svg.axis().scale(yscale4).orient("left").ticks(10);
+	//分会场D的y坐标轴
+    var yAxis5 = d3.svg.axis().scale(yscale5).orient("left").ticks(10);
+	//定义格栅绘制函数
+	//从x轴向上的格栅函数
+	function make_x_axis(){
+    return d3.svg.axis()
+        .scale(xscale)
+        .orient("bottom")
+        .ticks(10);
+	}
+	//主会场从y轴向右的格栅函数
+	function make_y_axis1(){
+    return d3.svg.axis()
+        .scale(yscale1)
+        .orient("left")
+        .ticks(10);
+	}
+	//分会场A从y轴向右的格栅函数
+	function make_y_axis2(){
+    return d3.svg.axis()
+        .scale(yscale2)
+        .orient("left")
+        .ticks(10);
+	}
+	//分会场B从y轴向右的格栅函数
+	function make_y_axis3(){
+    return d3.svg.axis()
+        .scale(yscale3)
+        .orient("left")
+        .ticks(10);
+	}
+	//分会场C从y轴向右的格栅函数
+	function make_y_axis4(){
+    return d3.svg.axis()
+        .scale(yscale4)
+        .orient("left")
+        .ticks(10);
+	}
+	//分会场D从y轴向右的格栅函数
+	function make_y_axis5(){
+    return d3.svg.axis()
+        .scale(yscale5)
+        .orient("left")
+        .ticks(10);
+	}
+    //定义主会场线条
+    var valueline1 = d3.svg.line()
+        .x(function(d){return xscale(parseDate(d[0]));})
+        .y(function(d){return yscale1(d[1]);})
+		.interpolate("basis-open");;
+		
+	//定义分会场A线条
+    var valueline2 = d3.svg.line()
+        .x(function(d){return xscale(parseDate(d[0]));})
+        .y(function(d){return yscale2(d[1]);})
+		.interpolate("basis-open");;
+		
+	//定义分会场B线条
+    var valueline3 = d3.svg.line()
+        .x(function(d){return xscale(parseDate(d[0]));})
+        .y(function(d){return yscale3(d[1]);})
+		.interpolate("basis-open");;
+		
+	//定义分会场C线条
+    var valueline4 = d3.svg.line()
+        .x(function(d){return xscale(parseDate(d[0]));})
+        .y(function(d){return yscale4(d[1]);})
+		.interpolate("basis-open");;
+		
+	//定义分会场D线条
+    var valueline5 = d3.svg.line()
+        .x(function(d){return xscale(parseDate(d[0]));})
+        .y(function(d){return yscale5(d[1]);})
+		.interpolate("basis-open");;
+	//定义绘制标签说明的线条
+	var labelline = d3.svg.line()
+		.x(function(d){return d[0];})
+		.y(function(d){return d[1];})
+		
+    var svg = d3.select("body")
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    //绘制x轴
+        svg.append("g")
+            .attr("class", " axis")
+            .attr("transform", "translate(0," + height + ")")
+			.style("font-weight","bold")
+			.style("font-size", "16px")
+            .call(xAxis);
+
+    //绘制主会场的y轴
+	
+    y1 =svg.append("g")
+            .attr("class", " axis")
+			.style("font-weight","bold")
+			.style("font-size", "16px")
+            .call(yAxis1);
+			
+	//绘制分会场A的y轴
+    y2 =svg.append("g")
+            .attr("class", " axis")
+			.attr("opacity", 0)
+			.style("font-weight","bold")
+			.style("font-size", "16px")
+            .call(yAxis2);
+			
+    //绘制分会场B的y轴
+    y3 =svg.append("g")
+            .attr("class", " axis")
+			.attr("opacity", 0)
+			.style("font-weight","bold")
+			.style("font-size", "16px")
+            .call(yAxis3);
+
+    //绘制分会场C的y轴
+    y4  =svg.append("g")
+            .attr("class", " axis")
+			.attr("opacity", 0)
+			.style("font-weight","bold")
+			.style("font-size", "16px")
+            .call(yAxis4);			
+
+    //绘制分会场D的y轴
+    y5  =svg.append("g")
+            .attr("class", " axis")
+			.attr("opacity", 0)
+			.style("font-weight","bold")
+			.style("font-size", "16px")
+            .call(yAxis5);
+			
+	//增加一个x轴的标签
+	svg.append("text")
+    .attr("transform", "translate(" + (width/2) + "," + (height + margin.bottom) + ")")
+    .style("text-anchor", "middle")
+	.style("font-weight","bold")
+	.style("font-size", "14px")
+    .text("Time");
+	
+	//增加一个y轴的标签
+	svg.append("text")
+    //.attr("transform", "rotate(-90)")
+    //.attr("y", -5 - margin.left)
+    //.attr("x", 0 - (height/2))
+    //.attr("dy", "1em")
+	.attr("transform", "translate(" + 0 + "," + (-20) + ")")
+    .style("text-anchor" , "middle")
+	.style("font-weight","bold")
+	.style("font-size", "16px")
+    .text("People");
+	
+
+		
+	//绘制格栅-x方向
+	
+	svg.append("g")
+    .attr("class", "grid")
+    .attr("transform", "translate(0," + height + ")")
+    .call(make_x_axis()
+        .tickSize(-height, 0, 0)
+        .tickFormat("")
+    )
+	
+	//绘制主会场格栅-y方向
+	makey1 = svg.append("g")
+    .attr("class", "grid")
+    .call(make_y_axis1()
+        .tickSize(-width, 0, 0)
+        .tickFormat("")
+    )
+	//绘制分会场A格栅-y方向
+	makey2 = svg.append("g")
+    .attr("class", "grid")
+	.attr("opacity", 0)
+    .call(make_y_axis2()
+        .tickSize(-width, 0, 0)
+        .tickFormat("")
+    )
+	//绘制分会场B格栅-y方向
+	makey3 = svg.append("g")
+    .attr("class", "grid")
+	.attr("opacity", 0)
+    .call(make_y_axis3()
+        .tickSize(-width, 0, 0)
+        .tickFormat("")
+    )
+	//绘制分会场C格栅-y方向
+	makey4 = svg.append("g")
+    .attr("class", "grid")
+	.attr("opacity", 0)
+    .call(make_y_axis4()
+        .tickSize(-width, 0, 0)
+        .tickFormat("")
+    )
+	//绘制分会场D格栅-y方向
+	makey5 = svg.append("g")
+    .attr("class", "grid")
+	.attr("opacity", 0)
+    .call(make_y_axis5()
+        .tickSize(-width, 0, 0)
+        .tickFormat("")
+    )
+	
+	//绘制主会场第一天
+    svg_path1=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline1(timeset1))
+		//.attr("class", "line")
+		.style('stroke','red');
+	//绘制主会场第二天
+	svg_path2=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline1(timeset2))
+		//.attr("class", "line")
+		.style("stroke", "green");
+	 //绘制主会场第三天
+	svg_path3=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline1(timeset3))
+		//.attr("class", "line")
+		.style("stroke", "steelblue");
+		
+	//绘制分会场A第一天
+    svg_path4=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline2(timeset4))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style('stroke','red');
+	//绘制分会场A第二天
+	svg_path5=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline2(timeset5))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style("stroke", "green");
+	 //绘制分会场A第三天
+	svg_path6=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline2(timeset6))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style("stroke", "steelblue");
+		
+	//绘制分会场B第一天
+    svg_path7=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline3(timeset7))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style('stroke','red');
+	//绘制分会场B第二天
+	svg_path8=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline3(timeset8))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style("stroke", "green");
+	 //绘制分会场B第三天
+	svg_path9=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline3(timeset9))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style("stroke", "steelblue");
+		
+	//绘制分会场C第一天
+    svg_path10=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline4(timeset10))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style('stroke','red');
+	//绘制分会场C第二天
+	svg_path11=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline4(timeset11))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style("stroke", "green");
+	 //绘制分会场C第三天
+	svg_path12=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline4(timeset12))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style("stroke", "steelblue");
+		
+	//绘制分会场D第一天
+    svg_path13=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline5(timeset13))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style('stroke','red');
+	//绘制分会场D第二天
+	svg_path14=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline5(timeset14))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style("stroke", "green");
+	 //绘制分会场D第三天
+	svg_path15=svg
+		//.append('g')
+		.append("path")
+		.attr("d", valueline5(timeset15))
+		.attr("opacity", 0)
+		//.attr("class", "line")
+		.style("stroke", "steelblue");
+	  
+	  	//添加说明1
+	svg.append("path")
+		//.append("circle")
+		//.attr("cx",1000)
+		//.attr("cy",20)
+		//.attr("width",1000)
+		//.attr("height",30)
+		//.attr("r",10)
+		.attr("d", labelline(label1))
+		//.attr('stroke-width', '2')
+		.style("stroke","red")
+		//.attr("stroke","white")
+	
+	//添加文字1
+	svg.append("text")
+		.attr("x", 1030)
+		.attr("y", 25)
+		//.attr("text-anchor", "middle")
+		.style("font-size", "16px")
+		//.style("text-decoration", "underline")
+		.text("day1");
+		
+	//添加说明2
+	svg.append("path")
+		//.append("circle")
+		//.attr("cx",1000)
+		//.attr("cy",60)
+		//.attr("width",550)
+		//.attr("height",30)
+		//.attr("r",10)
+		.attr("d", labelline(label2))
+		.style("stroke","green")
+		//.attr("stroke","white")
+		
+	//添加文字2
+	svg.append("text")
+		.attr("x", 1030)
+		.attr("y", 65)
+		//.attr("text-anchor", "middle")
+		.style("font-size", "16px")
+		//.style("text-decoration", "underline")
+		.text("day2");
+		
+	//添加说明3
+	svg.append("path")
+		//.append("circle")
+		//.attr("cx",1000)
+		//.attr("cy",100)
+		//.attr("r",10)
+		.attr("d", labelline(label3))
+		.style("stroke","steelblue")
+		//.attr("stroke","white")
+		
+	//添加文字3
+	svg.append("text")
+		.attr("x", 1030)
+		.attr("y", 105)
+		//.attr("text-anchor", "middle")
+		.style("font-size", "16px")
+		//.style("text-decoration", "underline")
+		.text("day3");		
+    });
+
+function updateData1() {
+  y1.attr("opacity", 1)
+  y2.attr("opacity", 0)
+  y3.attr("opacity", 0)
+  y4.attr("opacity", 0)
+  y5.attr("opacity", 0)
+  makey1.attr("opacity", 1)
+  makey2.attr("opacity", 0)
+  makey3.attr("opacity", 0)
+  makey4.attr("opacity", 0)
+  makey5.attr("opacity", 0)
+  svg_path1.attr("opacity", 1)
+  svg_path2.attr("opacity", 1)
+  svg_path3.attr("opacity", 1)
+  svg_path4.attr("opacity", 0)
+  svg_path5.attr("opacity", 0)
+  svg_path6.attr("opacity", 0)
+  svg_path7.attr("opacity", 0)
+  svg_path8.attr("opacity", 0)
+  svg_path9.attr("opacity", 0)
+  svg_path10.attr("opacity", 0)
+  svg_path11.attr("opacity", 0)
+  svg_path12.attr("opacity", 0)
+  svg_path13.attr("opacity", 0)
+  svg_path14.attr("opacity", 0)
+  svg_path15.attr("opacity", 0)
+}
+function updateData2() {
+  y1.attr("opacity", 0)
+  y2.attr("opacity", 1)
+  y3.attr("opacity", 0)
+  y4.attr("opacity", 0)
+  y5.attr("opacity", 0)
+  makey1.attr("opacity", 0)
+  makey2.attr("opacity", 1)
+  makey3.attr("opacity", 0)
+  makey4.attr("opacity", 0)
+  makey5.attr("opacity", 0)
+  svg_path1.attr("opacity", 0)
+  svg_path2.attr("opacity", 0)
+  svg_path3.attr("opacity", 0)
+  svg_path4.attr("opacity", 1)
+  svg_path5.attr("opacity", 1)
+  svg_path6.attr("opacity", 1)
+  svg_path7.attr("opacity", 0)
+  svg_path8.attr("opacity", 0)
+  svg_path9.attr("opacity", 0)
+  svg_path10.attr("opacity", 0)
+  svg_path11.attr("opacity", 0)
+  svg_path12.attr("opacity", 0)
+  svg_path13.attr("opacity", 0)
+  svg_path14.attr("opacity", 0)
+  svg_path15.attr("opacity", 0)
+}
+
+function updateData3() {
+  y1.attr("opacity", 0)
+  y2.attr("opacity", 0)
+  y3.attr("opacity", 1)
+  y4.attr("opacity", 0)
+  y5.attr("opacity", 0)
+  makey1.attr("opacity", 0)
+  makey2.attr("opacity", 0)
+  makey3.attr("opacity", 1)
+  makey4.attr("opacity", 0)
+  makey5.attr("opacity", 0)
+  svg_path1.attr("opacity", 0)
+  svg_path2.attr("opacity", 0)
+  svg_path3.attr("opacity", 0)
+  svg_path4.attr("opacity", 0)
+  svg_path5.attr("opacity", 0)
+  svg_path6.attr("opacity", 0)
+  svg_path7.attr("opacity", 1)
+  svg_path8.attr("opacity", 1)
+  svg_path9.attr("opacity", 1)
+  svg_path10.attr("opacity", 0)
+  svg_path11.attr("opacity", 0)
+  svg_path12.attr("opacity", 0)
+  svg_path13.attr("opacity", 0)
+  svg_path14.attr("opacity", 0)
+  svg_path15.attr("opacity", 0)
+}
+
+function updateData4() {
+  y1.attr("opacity", 0)
+  y2.attr("opacity", 0)
+  y3.attr("opacity", 0)
+  y4.attr("opacity", 1)
+  y5.attr("opacity", 0)
+  makey1.attr("opacity", 0)
+  makey2.attr("opacity", 0)
+  makey3.attr("opacity", 0)
+  makey4.attr("opacity", 1)
+  makey5.attr("opacity", 0)
+  svg_path1.attr("opacity", 0)
+  svg_path2.attr("opacity", 0)
+  svg_path3.attr("opacity", 0)
+  svg_path4.attr("opacity", 0)
+  svg_path5.attr("opacity", 0)
+  svg_path6.attr("opacity", 0)
+  svg_path7.attr("opacity", 0)
+  svg_path8.attr("opacity", 0)
+  svg_path9.attr("opacity", 0)
+  svg_path10.attr("opacity", 1)
+  svg_path11.attr("opacity", 1)
+  svg_path12.attr("opacity", 1)
+  svg_path13.attr("opacity", 0)
+  svg_path14.attr("opacity", 0)
+  svg_path15.attr("opacity", 0)
+}
+
+function updateData5() {
+  y1.attr("opacity", 0)
+  y2.attr("opacity", 0)
+  y3.attr("opacity", 0)
+  y4.attr("opacity", 0)
+  y5.attr("opacity", 1)
+  makey1.attr("opacity", 0)
+  makey2.attr("opacity", 0)
+  makey3.attr("opacity", 0)
+  makey4.attr("opacity", 0)
+  makey5.attr("opacity", 1)
+  svg_path1.attr("opacity", 0)
+  svg_path2.attr("opacity", 0)
+  svg_path3.attr("opacity", 0)
+  svg_path4.attr("opacity", 0)
+  svg_path5.attr("opacity", 0)
+  svg_path6.attr("opacity", 0)
+  svg_path7.attr("opacity", 0)
+  svg_path8.attr("opacity", 0)
+  svg_path9.attr("opacity", 0)
+  svg_path10.attr("opacity", 0)
+  svg_path11.attr("opacity", 0)
+  svg_path12.attr("opacity", 0)
+  svg_path13.attr("opacity", 1)
+  svg_path14.attr("opacity", 1)
+  svg_path15.attr("opacity", 1)
+}
+	</script>
+</body>
+</html>
